@@ -20,8 +20,8 @@
        dt=0.01; % mS
        
     %% Integration with Euler method
-    for t=-30: dt: 50
-   
+    for t= -30:dt:50    %simulate from  t=-30ms to t=50ms in steps of dt
+  
         if t==10; I_ext=10; end % turns external current on at t=10
         if t==40; I_ext=0; end % turns external current off at t=40
         
@@ -45,7 +45,7 @@
         x_0=Alpha.*tau;
               %%
         % leaky integration with Euler method
-        x=(1-dt./ tau). *x+dt. /tau. *x_0;
+        x=(1-dt./ tau) .* x+dt ./ tau .* x_0;    %DL: element-wise multiplication/division should be ".*" and "./"
         
         % calculate actual conductances g with given n, m, h
         gnmh(1)=g(1)*x(1)^4;
@@ -53,7 +53,7 @@
         gnmh(3)=g(3);
         
         % Ohm's Law
-            I=gnmh. *(V-E);
+            I=gnmh .* (V-E);        %DL: element-wise multiplication/division should be ".*" and "./"
             % gnmh, V-E are both 1x3 vectors
        % update voltage of membrane
        V=V+dt*(I_ext-sum(I));
