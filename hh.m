@@ -2,9 +2,11 @@
     clear; clf; 
    
     %% Setting parameters
-    % Maximal conductances (in units of mS/cm^2) ; 1=k, 2=Na, 3=R
+    % Maximal conductances of the 3 currents (in units of mS/cm^2) ; 
+    % g(1)=k, g(2)=Na, g(3)=R
     g(1)=36; g(2)=120; g(3)=0.3; 
-    % reversal potential / "Battery voltage" (in mV); 1=n, 2=m, 3=h
+    % reversal potential / "Battery voltage" of the 3 currents (in mV); 
+    % E(1)=k, E(2)=Na, E(3)=R
     E(1)=-12; E(2)=115; E(3)=10.613; 
 
     %% note: when we refer to (1), (2), and (3), whether we are
@@ -20,10 +22,11 @@
        dt=0.01; % mS
        
     %% Integration with Euler method
-    for t= -30:dt:50    %simulate from  t=-30ms to t=50ms in steps of dt
+    t = -30:dt:50;  %set up a time vector from t=-30ms to t=50ms in steps of dt
+    for tt= 1:length(t)    %loop through the time vector using index variable tt 
   
-        if t==10; I_ext=10; end % turns external current on at t=10
-        if t==40; I_ext=0; end % turns external current off at t=40
+        if t(tt)==10; I_ext=10; end % turns external current on at t=10
+        if t(tt)==40; I_ext=0; end % turns external current off at t=40
         
     % alpha functions used by H-H
     Alpha(1)=(10-V)/(100*(exp((10-V)/10)-1));
@@ -40,7 +43,7 @@
     Beta(2)=4*exp(-V/18);
     Beta(3)=1/(exp((30-V)/10)+1);
     
-    % tau_x and x_0 (x=1,2,3) are defined with alpha and beta
+    % tau_x and x_0 (x=n,m,h) are defined with alpha and beta
         tau=1./(Alpha+Beta); 
         x_0=Alpha.*tau;
               %%
@@ -57,17 +60,26 @@
             % gnmh, V-E are both 1x3 vectors
        % update voltage of membrane
        V=V+dt*(I_ext-sum(I));
+       
        % record some variables for plotting after equilibration 
-            if t>=0;
-                t_rec=t_rec+1;
-                x_plot(t_rec)=t;
-                y_plot(t_rec)=V;
+                V_plot(tt)=V;
+                I_plot(tt)=I_ext;
                 
-            end
+            
             
     end %time loop
     
     %% Plotting results
-        plot(x_plot,y_plot); xlabel('Time'); ylabel('Voltage');
+    figure
+    subplot(2,1,1)
+        plot(t,V_plot); xlabel('Time'); ylabel('Voltage (V)');
+        xlim([0 50])
+        ylim([-20 120])
         
+    subplot(2,1,2)
+        plot(t,I_plot)
+        xlabel('Time');
+        ylabel('External Current (I_e_x_t)')
+        ylim([-20 120])
+        xlim([0 50])
     
